@@ -6,10 +6,11 @@ import helmet from 'helmet';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 
-import authRoutes from './routes/auth';
-import userRoutes from './routes/user';
-import friendRoutes from './routes/friend';
-import { setupSocketIO } from './socket';
+import authRoutes from './routes/auth.js';
+import userRoutes from './routes/user.js';
+import friendRoutes from './routes/friend.js';
+import { setupSocketIO } from './socket/index.js';
+
 
 
 
