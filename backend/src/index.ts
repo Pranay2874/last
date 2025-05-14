@@ -6,10 +6,11 @@ import helmet from 'helmet';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 
-import authRoutes from './routes/auth.ts';
-import userRoutes from './routes/user.ts';
-import friendRoutes from './routes/friend.ts';
-import { setupSocketIO } from './socket/index.ts';
+import authRoutes from './routes/auth';
+import userRoutes from './routes/user';
+import friendRoutes from './routes/friend';
+import { setupSocketIO } from './socket';
+
 
 
 // Load environment variables
