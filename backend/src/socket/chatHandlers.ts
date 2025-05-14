@@ -2,6 +2,7 @@ import { Server, Socket } from 'socket.io';
 import ChatSession from '../models/ChatSession.js';
 import User from '../models/User.js';
 import { ISocketUser } from '../types/socket.js';
+import { ObjectId } from 'mongodb'; 
 
 interface AuthenticatedSocket extends Socket {
   user?: ISocketUser;

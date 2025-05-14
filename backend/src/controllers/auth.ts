@@ -1,6 +1,11 @@
 import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
-import User from '../models/User.js';
+import User, { IUser } from '../models/User.js';
+
+// Define JWT payload interface
+interface JwtPayload {
+  id: string;
+}
 
 // Generate JWT token
 const generateToken = (id: string): string => {
@@ -8,6 +13,17 @@ const generateToken = (id: string): string => {
     expiresIn: process.env.JWT_EXPIRES_IN || '7d'
   });
 };
+
+// Extend Express Request type to include user
+declare global {
+  namespace Express {
+    interface Request {
+      user?: {
+        id: string;
+      };
+    }
+  }
+}
 
 // Register a new user
 export const register = async (req: Request, res: Response): Promise<void> => {
@@ -44,17 +60,19 @@ export const register = async (req: Request, res: Response): Promise<void> => {
     // Generate token
     const token = generateToken(user._id.toString());
 
+    const userResponse: Partial<IUser> = {
+      _id: user._id,
+      username: user.username,
+      gender: user.gender,
+      interests: user.interests,
+      friends: user.friends,
+      friendRequests: user.friendRequests
+    };
+
     res.status(201).json({
       success: true,
       token,
-      user: {
-        id: user._id,
-        username: user.username,
-        gender: user.gender,
-        interests: user.interests,
-        friends: user.friends,
-        friendRequests: user.friendRequests
-      }
+      user: userResponse
     });
   } catch (error) {
     console.error('Registration error:', error);
@@ -98,17 +116,19 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     // Generate token
     const token = generateToken(user._id.toString());
 
+    const userResponse: Partial<IUser> = {
+      _id: user._id,
+      username: user.username,
+      gender: user.gender,
+      interests: user.interests,
+      friends: user.friends,
+      friendRequests: user.friendRequests
+    };
+
     res.status(200).json({
       success: true,
       token,
-      user: {
-        id: user._id,
-        username: user.username,
-        gender: user.gender,
-        interests: user.interests,
-        friends: user.friends,
-        friendRequests: user.friendRequests
-      }
+      user: userResponse
     });
   } catch (error) {
     console.error('Login error:', error);
@@ -122,7 +142,15 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 // Get current user
 export const getCurrentUser = async (req: Request, res: Response): Promise<void> => {
   try {
-    const user = await User.findById(req.user?.id)
+    if (!req.user?.id) {
+      res.status(401).json({ 
+        success: false, 
+        message: 'Not authenticated' 
+      });
+      return;
+    }
+
+    const user = await User.findById(req.user.id)
       .populate('friends', 'username gender isOnline')
       .populate('friendRequests.sender', 'username');
     
@@ -134,17 +162,19 @@ export const getCurrentUser = async (req: Request, res: Response): Promise<void>
       return;
     }
 
+    const userResponse: Partial<IUser> = {
+      _id: user._id,
+      username: user.username,
+      gender: user.gender,
+      interests: user.interests,
+      friends: user.friends,
+      friendRequests: user.friendRequests,
+      isOnline: user.isOnline
+    };
+
     res.status(200).json({
       success: true,
-      user: {
-        id: user._id,
-        username: user.username,
-        gender: user.gender,
-        interests: user.interests,
-        friends: user.friends,
-        friendRequests: user.friendRequests,
-        isOnline: user.isOnline
-      }
+      user: userResponse
     });
   } catch (error) {
     console.error('Get current user error:', error);
@@ -158,8 +188,16 @@ export const getCurrentUser = async (req: Request, res: Response): Promise<void>
 // Logout user
 export const logout = async (req: Request, res: Response): Promise<void> => {
   try {
+    if (!req.user?.id) {
+      res.status(401).json({ 
+        success: false, 
+        message: 'Not authenticated' 
+      });
+      return;
+    }
+
     // Update user status to offline
-    await User.findByIdAndUpdate(req.user?.id, {
+    await User.findByIdAndUpdate(req.user.id, {
       isOnline: false,
       lastActive: new Date()
     });
