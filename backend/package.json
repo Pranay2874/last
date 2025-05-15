@@ -4,11 +4,12 @@
   "description": "MakeAFrnd backend server",
   "main": "dist/index.js",
   "type": "module",
-  "scripts": {
-    "dev": "nodemon --watch src --ext ts --exec \"node --import tsx\" src/index.ts",
-    "build": "tsc",
-    "start": "node dist/index.js"
-  },
+ "scripts": {
+  "install:all": "npm install",
+  "dev": "your-development-command",
+  "build": "tsc",
+  "start": "node dist/index.js"
+},
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
