@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 import http from 'http';
 import { Server } from 'socket.io';
 import cors from 'cors';
@@ -10,9 +10,6 @@ import authRoutes from './routes/auth.js';
 import userRoutes from './routes/user.js';
 import friendRoutes from './routes/friend.js';
 import { setupSocketIO } from './socket/index.js';
-
-
-
 
 // Load environment variables
 dotenv.config();
@@ -41,7 +38,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/friends', friendRoutes);
 
 // Health check route
-app.get('/health', (req, res) => {
+app.get('/health', (req: Request, res: Response) => {
   res.status(200).json({ status: 'ok' });
 });
 

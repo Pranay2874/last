@@ -2,7 +2,7 @@ import { Server, Socket } from 'socket.io';
 import ChatSession from '../models/ChatSession.js';
 import User from '../models/User.js';
 import { ISocketUser } from '../types/socket.js';
-import { ObjectId } from 'mongodb'; 
+import { Types } from 'mongoose';
 
 interface AuthenticatedSocket extends Socket {
   user?: ISocketUser;
@@ -181,7 +181,7 @@ export const setupChatHandlers = (
 
       // Add message to session
       session.messages.push({
-        sender: userId,
+        sender: new Types.ObjectId(userId),
         content: message,
         timestamp: new Date()
       });
@@ -295,7 +295,7 @@ export const setupChatHandlers = (
         return;
       }
 
-      if (user.friends.includes(recipientId)) {
+      if (user.friends.includes(new Types.ObjectId(recipientId))) {
         socket.emit('chat:error', { message: 'You are already friends with this user' });
         return;
       }
@@ -312,7 +312,7 @@ export const setupChatHandlers = (
 
       // Add friend request to recipient
       recipient.friendRequests.push({
-        sender: userId,
+        sender: new Types.ObjectId(userId),
         status: 'pending',
         createdAt: new Date()
       });
@@ -441,7 +441,7 @@ export const setupChatHandlers = (
 
       // Create a new chat session
       const session = await ChatSession.create({
-        participants: participantIds,
+        participants: participantIds.map(id => new Types.ObjectId(id)),
         sessionType,
         commonInterests: commonInterests || [],
         active: true,
