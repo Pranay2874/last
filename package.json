@@ -14,6 +14,10 @@
     "start": "cd backend && npm run start"
   },
   "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/express": "^5.0.1",
+    "@types/jsonwebtoken": "^9.0.9",
+    "@types/mongoose": "^5.11.96",
     "concurrently": "^8.2.2"
   }
 }
