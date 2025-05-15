@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import jwt from 'jsonwebtoken';
+import jwt, { Secret } from 'jsonwebtoken';
 import User, { IUser } from '../models/User.js';
 
 // Define JWT payload interface
@@ -9,8 +9,9 @@ interface JwtPayload {
 
 // Generate JWT token
 const generateToken = (id: string): string => {
-  return jwt.sign({ id }, process.env.JWT_SECRET || 'secret', {
-    expiresIn: process.env.JWT_EXPIRES_IN || '7d'
+  const secret: Secret = process.env.JWT_SECRET || 'secret';
+  return jwt.sign({ id }, secret, {
+    expiresIn: process.env.JWT_EXPIRES_IN || '7d',
   });
 };
 
